@@ -7,5 +7,37 @@ services:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run dev
+    depends_on:
+      - db
     environment:
       - NODE_ENV=development
+      - DB_HOST=db             
+      - DB_USER=admin
+      - DB_PASS=admin_password
+      - DB_NAME=smart_workspace_db
+      - DB_PORT=5432
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: smart_workspace_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
